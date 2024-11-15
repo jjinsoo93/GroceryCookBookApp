@@ -8,6 +8,13 @@ body {
   text-align: center;
 }
 
+.bio-picture {
+  width: 150px; /* Adjust the width as needed */
+  border-radius: 50%; /* Makes it circular */
+  margin: 20px auto;
+  display: block;
+}
+
 input {
   width: 100%;
   padding: 10px;
