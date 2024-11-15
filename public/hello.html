@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recipe Search</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Recipe Search</h1>
+    
+    <!-- Search bar for recipes -->
+    <input type="text" id="search-input" placeholder="Search for a recipe..." />
+    <button id="search-button">Search</button>
+
+    <!-- Display search results -->
+    <div id="recipe-results"></div>
+
+    <!-- Logout button now calls window.logout() from the Firebase auth script -->
+    <button onclick="window.logout()">Logout</button>
+  </div>
+
+  <!-- Import Firebase Authentication module -->
+  <script type="module" src="https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js"></script>
+  <script type="module" src="https://www.gstatic.com/firebasejs/9.1.0/firebase-auth.js"></script>
+
+  <!-- Import Firebase configuration and auth logic -->
+  <script type="module" src="firebase-config.js"></script> <!-- This script contains the login/logout functions -->
+  
+  <!-- Main script for recipe and product search functionality -->
+  <script>
+    const apiKey = '5e24fc64434f42be90753645eb19af1c';
+
+    // Fetch recipes based on user input query
+    async function searchRecipes(query) {
+      const url = `https://api.spoonacular.com/recipes/complexSearch?query=${query}&number=5&apiKey=${apiKey}`;
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+        if (data.results.length > 0) {
+          const recipes = await fetchRecipeDetails(data.results);
+          displayRecipes(recipes);
+        } else {
+          document.getElementById('recipe-results').innerHTML = 'No recipes found.';
+        }
+      } catch (error) {
+        console.error('Error fetching recipes:', error);
+      }
+    }
+
+    // Fetch detailed information for each recipe
+    async function fetchRecipeDetails(recipes) {
+      const details = await Promise.all(
+        recipes.map(async (recipe) => {
+          const url = `https://api.spoonacular.com/recipes/${recipe.id}/information?apiKey=${apiKey}`;
+          const response = await fetch(url);
+          return response.json();
+        })
+      );
+      return details;
+    }
+
+    // Display recipes and ingredients in the DOM
+    function displayRecipes(recipes) {
+      const resultsDiv = document.getElementById('recipe-results');
+      resultsDiv.innerHTML = '';
+
+      recipes.forEach((recipe) => {
+        const recipeElement = document.createElement('div');
+        recipeElement.classList.add('recipe');
+        recipeElement.innerHTML = `
+          <h3>${recipe.title}</h3>
+          <img src="${recipe.image}" alt="${recipe.title}" />
+          <h4>Ingredients:</h4>
+          <ul>
+            ${recipe.extendedIngredients.map(ingredient => `
+              <li>
+                <a href="#" onclick="fetchAndDisplayPrice('${ingredient.name}')">${ingredient.name}</a>
+              </li>
+            `).join('')}
+          </ul>
+        `;
+        resultsDiv.appendChild(recipeElement);
+      });
+    }
+
+    // Fetch product price and information from Open Food Facts
+    async function fetchProductInfo(ingredient) {
+      try {
+        const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${ingredient}&search_simple=1&json=1`;
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data.products && data.products.length > 0) {
+          return data.products[0]; // Return the first matching product
+        } else {
+          throw new Error(`No product found for ${ingredient}`);
+        }
+      } catch (error) {
+        console.error('Error fetching product data:', error);
+        return null;
+      }
+    }
+
+    // Display the fetched price information
+    async function fetchAndDisplayPrice(ingredient) {
+      const product = await fetchProductInfo(ingredient);
+      if (product) {
+        const priceInfo = product.stores_tags && product.stores_tags.length > 0
+          ? `Price data not available, but it is available at ${product.stores_tags.join(", ")}`
+          : "Price not available";
+        alert(`Product information for ${ingredient}: ${product.product_name || ingredient}. ${priceInfo}`);
+      } else {
+        alert(`No product information available for ${ingredient}`);
+      }
+    }
+
+    // Event listener for recipe search
+    document.getElementById('search-button').addEventListener('click', () => {
+      const query = document.getElementById('search-input').value;
+      if (query) {
+        searchRecipes(query);
+      } else {
+        alert('Please enter a recipe name.');
+      }
+    });
+  </script>
+</body>
+</html>
