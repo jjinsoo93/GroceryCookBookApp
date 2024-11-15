@@ -86,7 +86,7 @@
           <ul>
             ${recipe.extendedIngredients.map(ingredient => `
               <li>
-                <a href="#" onclick="fetchAndDisplayPrice('${ingredient.name}')">${ingredient.name}</a>
+                <a href="#" onclick="fetchAndDisplayAvailability('${ingredient.name}')">${ingredient.name}</a>
               </li>
             `).join('')}
           </ul>
@@ -95,7 +95,7 @@
       });
     }
 
-    // Fetch product price and information from Open Food Facts
+    // Fetch product information from Open Food Facts
     async function fetchProductInfo(ingredient) {
       try {
         const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${ingredient}&search_simple=1&json=1`;
@@ -113,16 +113,16 @@
       }
     }
 
-    // Display the fetched price information
-    async function fetchAndDisplayPrice(ingredient) {
+    // Display only the availability information of the ingredient
+    async function fetchAndDisplayAvailability(ingredient) {
       const product = await fetchProductInfo(ingredient);
       if (product) {
-        const priceInfo = product.stores_tags && product.stores_tags.length > 0
-          ? `Price data not available, but it is available at ${product.stores_tags.join(", ")}`
-          : "Price not available";
-        alert(`Product information for ${ingredient}: ${product.product_name || ingredient}. ${priceInfo}`);
+        const availabilityInfo = product.stores_tags && product.stores_tags.length > 0
+          ? `Available at: ${product.stores_tags.join(", ")}`
+          : "Availability information not available";
+        alert(`Product availability for ${ingredient}: ${availabilityInfo}`);
       } else {
-        alert(`No product information available for ${ingredient}`);
+        alert(`No availability information available for ${ingredient}`);
       }
     }
 
