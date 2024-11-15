@@ -3,14 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Recipe Search</title>
+  <title>Grocery CookBook App</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <div class="container">
-    <h1>Recipe Search</h1>
-    
-    <!-- Search bar for recipes -->
+    <!-- Project Information -->
+    <h1>Grocery CookBook App</h1>
+    <div id="project-info">
+      <p><strong>Project ID and Title:</strong> Indy09-Red-GroceryCookBookApp</p>
+      <p><strong>Course:</strong> CS 4850/02</p>
+      <p><strong>Semester and Year:</strong> Fall 2024</p>
+    </div>
+
+    <!-- GitHub Link -->
+    <div id="github-link">
+      <p><strong>GitHub Repository:</strong></p>
+      <p><a href="https://github.com/jjinsoo93/GroceryCookBookApp" target="_blank">https://github.com/jjinsoo93/GroceryCookBookApp</a></p>
+    </div>
+
+    <!-- Recipe Search Section -->
+    <h2>Recipe Search</h2>
     <input type="text" id="search-input" placeholder="Search for a recipe..." />
     <button id="search-button">Search</button>
 
@@ -21,14 +34,11 @@
     <button onclick="window.logout()">Logout</button>
   </div>
 
-  <!-- Import Firebase Authentication module -->
+  <!-- Firebase and JavaScript -->
   <script type="module" src="https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js"></script>
   <script type="module" src="https://www.gstatic.com/firebasejs/9.1.0/firebase-auth.js"></script>
+  <script type="module" src="firebase-config.js"></script> <!-- Contains login/logout functions -->
 
-  <!-- Import Firebase configuration and auth logic -->
-  <script type="module" src="firebase-config.js"></script> <!-- This script contains the login/logout functions -->
-  
-  <!-- Main script for recipe and product search functionality -->
   <script>
     const apiKey = '5e24fc64434f42be90753645eb19af1c';
 

@@ -1,5 +1,26 @@
 import { auth } from './firebase-config.js';
-import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-auth.js";
+import { 
+  signInWithEmailAndPassword, 
+  signOut, 
+  onAuthStateChanged, 
+  createUserWithEmailAndPassword 
+} from "https://www.gstatic.com/firebasejs/9.1.0/firebase-auth.js";
+
+// Register function
+export function register() {
+  const email = document.getElementById("register-email").value;
+  const password = document.getElementById("register-password").value;
+
+  createUserWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      alert('Registered successfully!');
+      window.location.href = 'hello.html'; // Redirect to "Hello World" page after registration
+    })
+    .catch((error) => {
+      const errorMessage = error.message;
+      document.getElementById("register-error").innerText = errorMessage;
+    });
+}
 
 // Login function
 export function login() {
@@ -44,6 +65,7 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 
-// Expose login and logout functions to global scope
+// Expose login, logout, and register functions to global scope
 window.login = login;
 window.logout = logout;
+window.register = register;
